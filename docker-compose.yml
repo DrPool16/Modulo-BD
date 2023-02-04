@@ -1,11 +1,13 @@
 version: '3.8'
 services:
-  databse:
+  database:
     container_name: influxdb
     image: influx_image
     restart: always
     ports:
       - "8086:8086"
+    env_file:
+      - services/influx/.env
     build:
       context: .
       dockerfile: services/influx/Dockerfile
@@ -44,10 +46,26 @@ services:
           - grafana
   telegraf:
     container_name: telegraf
-    image: telegraf:1.25.0
+    image: telegraf_image
     restart: always
-    environment:
-      - INFLUX_TOKEN=mo3mjao_sZaiTI_0v4In5fLZVUn9kettbYE7r6BOiwWhiHk_XXX6BkCIfzU0bUa9gUgcRSbCn3qVmUxV-o-QIg==
-    command: --config http://influxdb:8086/api/v2/telegrafs/0aaa4922d218e000
+    build:
+      context: .
+      dockerfile: services/telegraf/Dockerfile
     depends_on:
-      - databse
+      - database
+      - broker
+    links:
+      - database
+
+  analitica:
+    container_name: analitica
+    image: analitica_image
+    restart: always
+    build:
+      context: .
+      dockerfile: services/analitica/Dockerfile
+    depends_on:
+      - database
+      - broker
+    links:
+      - database
