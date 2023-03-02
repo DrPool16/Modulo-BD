@@ -56,16 +56,3 @@ services:
       - broker
     links:
       - database
-
-  analitica:
-    container_name: analitica
-    image: analitica_image
-    restart: always
-    build:
-      context: .
-      dockerfile: services/analitica/Dockerfile
-    depends_on:
-      - database
-      - broker
-    links:
-      - database
